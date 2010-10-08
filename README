@@ -1,14 +1,16 @@
-CSO is "Central Sign On", an application supports LDAP and OpenID.
+CSO is an OpenID server to create "Central Sign On" service that supports LDAP
+ backend as the user databse.
 
-LDAP server             <-- LDAP --> CSO <-- OpenID --> Other applications
+LDAP server             <-- LDAP --> CSO <-- OpenID --> OpenID clients
 (Active Directory etc.)
 
 == Install
 
-Requirements:
-* Ruby 1.8.7, because ruby-openid does not work with Ruby 1.9.2
-* Rails 3
+CSO is compatible with Ruby 1.9.2. You need Rails 3.
 
-Copy config/cso.rb.sample to config/cso.rb, and to fit your environment.
+* Copy config/cso.rb.sample to config/cso.rb, and to fit your environment.
+* Then run as a normal Rails application.
 
-Then run as a normal Rails application.
+== Usage
+
+Form of OpenID URL: http(s)://<CSO server>/users/<LDAP username>

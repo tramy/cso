@@ -1,10 +1,8 @@
-# Sample localization file for English. Add more files in this directory for other locales.
-# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
-
 en:
   login:
-    username: Username
-    password: Password
-    login:    Login
-    cancel:   Cancel
+    username:  Username
+    password:  Password
+    login:     Login
+    cancel:    Cancel
+    login_mes: Please login
     login_error: Wrong username or password

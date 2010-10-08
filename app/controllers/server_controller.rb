@@ -1,7 +1,7 @@
 require 'pathname'
 
-require "openid"
-require "openid/consumer/discovery"
+# See Gemfile
+require 'openid/consumer/discovery'
 require 'openid/extensions/sreg'
 require 'openid/extensions/pape'
 require 'openid/store/filesystem'
@@ -80,7 +80,7 @@ class ServerController < ApplicationController
     self.render_response(oidresp)
   end
 
-  def show_decision_page(oidreq, message="Please login")
+  def show_decision_page(oidreq, message=t(:'login.login_mes'))
     session[:last_oidreq] = oidreq
     @oidreq = oidreq
 
@@ -149,7 +149,7 @@ EOS
     else
       @oidreq = oidreq
       flash[:notice] = nil
-      flash[:error]  = "Wrong username or password"
+      flash[:error]  = t(:'login.login_error')
       render :template => 'server/decide', :layout => 'application'
     end
   end

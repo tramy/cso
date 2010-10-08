@@ -1,9 +1,8 @@
-
 ja:
   login:
-    username: ユーザ名
-    password: パスワード
-    login:    ログイン
-    cancel:   キャンセル
+    username:  ユーザ名
+    password:  パスワード
+    login:     ログイン
+    cancel:    キャンセル
+    login_mes: ログインしてください
     login_error: ユーザー名またはパスワードが正しくありません
-
