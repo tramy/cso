@@ -1,0 +1,35 @@
+* {
+  font-family: verdana, sans-serif;
+}
+
+body {
+  font-family: helvetica, arial;
+  color:       #888;
+  margin:      20px;
+}
+
+#container {
+  margin:           0 auto;
+  padding:          10px;
+  width:            350px;
+  text-align:       left;
+  background-color: #EEE;        
+}
+
+#header {
+  text-align: center;
+}
+
+#footer {
+  font-size:  smaller;
+  text-align: center;
+}
+
+.notice {
+  border:     1px solid #60964f;
+  background: #b3dca7;
+}
+.error {
+  border:     1px solid #ff0000;
+  background: #ffaaaa;
+}

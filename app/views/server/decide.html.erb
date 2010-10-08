@@ -1,0 +1,23 @@
+<form method="post" action="<%= url_for :controller => 'server', :action => 'decision' %>">
+  <%= token_tag %>
+
+  <% username = username_from_openid_identity(@oidreq.identity) %>
+  
+  <table>
+    <tr>
+      <th>Username:</th>
+      <td>
+        <%= username %>
+        <input type="hidden" name="username" value="<%= username %>" />
+      </td>
+    </tr>
+    <tr>
+      <th>Password:</th>
+      <td><input type="password" name="password" /></td>
+    </tr>
+  </table>
+  
+  <input type="submit" name="login" value="Login" />
+  <a href="<%= @oidreq.cancel_url%>">Cancel</a>
+</form>
+

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Central Sign On</title>
+    <%= stylesheet_link_tag :all %>
+    <%= csrf_meta_tag %>
+  </head>
+
+  <body>
+    <div id="container">
+      <div id="header">
+        <h2>Central Sign On</h2>
+      </div>
+
+      <% if flash[:notice] || flash[:error] %>
+        <div class="<%= flash[:notice].nil? ? 'error' : 'notice' %>">
+          <%= flash[:notice] || flash[:error] %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+      
+      <div id="footer">
+        Powered by <a href="http://github.com/tramy/cso">CSO</a>
+      </div>
+    </div>
+  </body>
+</html>
