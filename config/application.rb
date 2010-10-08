@@ -1,6 +1,6 @@
 require File.expand_path('../boot', __FILE__)
 
-require File.expand_path('../ldap', __FILE__)
+require File.expand_path('../cso', __FILE__)
 
 # Pick the frameworks you want:
 # require "active_record/railtie"

@@ -1,5 +1,6 @@
 Gemfile.lock
 .bundle
+config/cso.rb
 db/*
 log/*
 tmp/**/*
