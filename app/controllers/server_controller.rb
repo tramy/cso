@@ -15,9 +15,44 @@ class ServerController < ApplicationController
   protect_from_forgery :except => :index
 
   def welcome
-    flash[:notice] = nil
-    flash[:error]  = nil
     render :text => '', :layout => 'application'
+  end
+
+  def user_page
+    # Yadis content-negotiation: we want to return the xrds if asked for
+    accept = request.env['HTTP_ACCEPT']
+
+    # This is not technically correct, and should eventually be updated
+    # to do real Accept header parsing and logic.  Though I expect it will work
+    # 99% of the time.
+    if accept and accept.include?('application/xrds+xml')
+      user_xrds
+      return
+    end
+
+    # Content negotiation failed, so just render the user page
+    xrds_url = url_for(:controller => 'server', :action => 'user_xrds', :username => params[:username])
+    identity_page = <<EOS
+<html><head>
+<meta http-equiv="X-XRDS-Location" content="#{xrds_url}" />
+<link rel="openid.server" href="#{url_for(:action => 'index')}" />
+</head><body><p>OpenID identity page for #{params[:username]}</p>
+</body></html>
+EOS
+
+    # Also add the Yadis location header, so that they don't have
+    # to parse the html unless absolutely necessary
+    response.headers['X-XRDS-Location'] = xrds_url
+    render :text => identity_page
+  end
+
+  def user_xrds
+    types = [
+      OpenID::OPENID_2_0_TYPE,
+      OpenID::OPENID_1_0_TYPE,
+      OpenID::SREG_URI
+    ]
+    render_xrds(types)
   end
 
   def index
@@ -38,7 +73,6 @@ class ServerController < ApplicationController
     oidresp = nil
 
     if oidreq.kind_of?(CheckIDRequest)
-
       identity = oidreq.identity
 
       if oidreq.id_select
@@ -46,7 +80,7 @@ class ServerController < ApplicationController
           oidresp = oidreq.answer(false)
         elsif session[:username].nil?
           # The user hasn't logged in
-          show_decision_page(oidreq)
+          show_login_page(oidreq)
           return
         else
           # Else, set the identity to the one the user is using
@@ -69,7 +103,7 @@ class ServerController < ApplicationController
         oidresp = oidreq.answer(false, server_url)
 
       else
-        show_decision_page(oidreq)
+        show_login_page(oidreq)
         return
       end
 
@@ -80,57 +114,7 @@ class ServerController < ApplicationController
     self.render_response(oidresp)
   end
 
-  def show_decision_page(oidreq, message=t(:'login.login_mes'))
-    session[:last_oidreq] = oidreq
-    @oidreq = oidreq
-
-    flash[:notice] = message if message
-    render :template => 'server/decide', :layout => 'application'
-  end
-
-  def user_page
-    # Yadis content-negotiation: we want to return the xrds if asked for.
-    accept = request.env['HTTP_ACCEPT']
-
-    # This is not technically correct, and should eventually be updated
-    # to do real Accept header parsing and logic.  Though I expect it will work
-    # 99% of the time.
-    if accept and accept.include?('application/xrds+xml')
-      user_xrds
-      return
-    end
-
-    # content negotiation failed, so just render the user page
-    xrds_url = url_for(:controller=>'user',:action=>params[:username])+'/xrds'
-    identity_page = <<EOS
-<html><head>
-<meta http-equiv="X-XRDS-Location" content="#{xrds_url}" />
-<link rel="openid.server" href="#{url_for :action => 'index'}" />
-</head><body><p>OpenID identity page for #{params[:username]}</p>
-</body></html>
-EOS
-
-    # Also add the Yadis location header, so that they don't have
-    # to parse the html unless absolutely necessary.
-    response.headers['X-XRDS-Location'] = xrds_url
-    render :text => identity_page
-  end
-
-  def user_xrds
-    types = [
-      OpenID::OPENID_2_0_TYPE,
-      OpenID::OPENID_1_0_TYPE,
-      OpenID::SREG_URI
-    ]
-    render_xrds(types)
-  end
-
-  def idp_xrds
-    types = [OpenID::OPENID_IDP_2_0_TYPE]
-    render_xrds(types)
-  end
-
-  def decision
+  def login
     oidreq = session[:last_oidreq]
 
     username = params[:username]
@@ -148,13 +132,20 @@ EOS
       return self.render_response(oidresp)
     else
       @oidreq = oidreq
-      flash[:notice] = nil
-      flash[:error]  = t(:'login.login_error')
-      render :template => 'server/decide', :layout => 'application'
+      flash.now[:error]  = t(:'login.login_error')
+      render :template => 'server/login', :layout => 'application'
     end
   end
 
   protected
+
+  def show_login_page(oidreq, message=t(:'login.login_mes'))
+    session[:last_oidreq] = oidreq
+    @oidreq = oidreq
+
+    flash.now[:notice] = message if message
+    render :template => 'server/login', :layout => 'application'
+  end
 
   def server
     if @server.nil?
@@ -179,7 +170,7 @@ EOS
     type_str = ""
 
     types.each { |uri|
-      type_str += "<Type>#{uri}</Type>\n      "
+      type_str += "<Type>#{uri}</Type>\n"
     }
 
     yadis = <<EOS
@@ -211,7 +202,7 @@ EOS
     sreg_data = {
       'nickname' => session[:username],
       'fullname' => 'Mayor McCheese',
-      'email' => 'mayor@example.com'
+      'email'    => 'mayor@example.com'
     }
 
     sregresp = OpenID::SReg::Response.extract_response(sregreq, sreg_data)
