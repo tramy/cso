@@ -17,4 +17,8 @@ Form of OpenID URL: http(s)://<CSO server>/users/<LDAP username>
 
 == Session
 
-Sessions are saved in SQLite3 DB because the cookie store maybe in this bug ActionDispatch::Cookies::CookieOverflow
+Sessions are saved in SQLite3 DB because the cookie store maybe in this bug: ActionDispatch::Cookies::CookieOverflow
+
+Prepare session table in DB:
+rake db:sessions:create
+RAILS_ENV=production rake db:sessions:create
