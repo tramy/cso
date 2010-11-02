@@ -14,3 +14,7 @@ CSO is compatible with Ruby 1.9.2. You need Rails 3.
 == Usage
 
 Form of OpenID URL: http(s)://<CSO server>/users/<LDAP username>
+
+== Session
+
+Sessions are saved in SQLite3 DB because the cookie store maybe in this bug ActionDispatch::Cookies::CookieOverflow
